@@ -1,4 +1,4 @@
-name: Build
+name: Release
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  package:
+  release:
     runs-on: ubuntu-latest
-    setps:
+    steps:
       - run: |
           echo '测试'
