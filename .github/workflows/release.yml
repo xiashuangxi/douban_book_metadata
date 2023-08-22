@@ -3,34 +3,12 @@ name: Release
 on:
   push:
     branches: [ main ]
-
 jobs:
-  Release:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Source 
-      uses: actions/checkout@main
-
-    - name: Zip
-      run: zip -r Douban_Book_Metadata.zip ./src/
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env: 
-        GITHUB_TOKEN: ${{ github.ref }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: TODO New Release
-        draft: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./Douban_Book_Metadata.zip
-        asset_name: Douban_Book_Metadata.zip
-        asset_content_type: application/zip
+    - uses: actions/checkout@v1
+    - name: Zip Folder
+      run: zip -r release.zip .
+    - name: Release to Github
+      run: echo "Release"
