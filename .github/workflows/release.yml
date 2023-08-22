@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo ${pwd}
-          cd src | zip -r douban_book_metadata.zip ../a.zip *
+          echo ${GITHUB_WORKSPACE}
+          cd ${GITHUB_WORKSPACE}/src | zip -r douban_book_metadata.zip ${GITHUB_WORKSPACE}/a.zip *
