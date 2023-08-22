@@ -1,17 +1,55 @@
 name: Release
 
+# on:
+#   push:
+#     branches:
+#       - main
+
+
+# jobs:
+#   release:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v1
+#       # - run: composer install --ansi --no-progress --no-interaction --prefer-dist
+#       - uses: montudor/action-zip@v1
+#         with:
+#           files: src/
+#           args: Douban Book Metadata.zip
+
+
+# on:
+#   release:
+#     types:
+#       - created
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: zip folder
+#         run: zip -r ${{github.event.repository.name}}.zip ./src
+
+#       - name: Release
+#         uses: actions/github-script@v6
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 on:
   push:
     branches:
       - main
 
 jobs:
-  release:
+  Release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      # - run: composer install --ansi --no-progress --no-interaction --prefer-dist
-      - uses: montudor/action-zip@v1
-        with:
-          files: src/
-          args: Douban Book Metadata.zip
+    
+      - name: zip
+        run: |
+          zip -r aaa.zip ./*
+
+      - name: create download
+        uses: actions/upload-artifact@v2
+        with: 
+          name: assets-for-download
+          path: ./
