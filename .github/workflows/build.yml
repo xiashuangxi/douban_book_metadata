@@ -1,0 +1,13 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    setps:
+      - run: |
+          echo '测试'
