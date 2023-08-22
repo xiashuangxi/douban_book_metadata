@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo '测试'
+          zip -r douban_book_metadata.zip /src
