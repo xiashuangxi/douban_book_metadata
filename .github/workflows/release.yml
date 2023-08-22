@@ -6,10 +6,6 @@ on:
     types:
       - created
 
-# on:
-#   push:
-#     branches: [ main ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,7 +15,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Zip Folder
-        run: zip -r ${{ github.event.repository.name }}.zip .
+        run: |
+          cd ${{ github.event.repository.name }}/src
+          zip -r ../${{ github.event.repository.name }}.zip .
 
       - name: Release
         uses: softprops/action-gh-release@v1
