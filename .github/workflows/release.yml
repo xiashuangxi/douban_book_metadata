@@ -17,7 +17,7 @@ jobs:
       - name: Zip Folder
         working-directory: ./src
         run: |
-          zip -r ${{ github.event.repository.name }}.zip .
+          zip -r ../${{ github.event.repository.name }}.zip .
 
       - name: Release
         uses: softprops/action-gh-release@v1
