@@ -9,6 +9,11 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo ${GITHUB_WORKSPACE}
-          cd ${GITHUB_WORKSPACE}/src | zip -r douban_book_metadata.zip ${GITHUB_WORKSPACE}/a.zip *
+      - uses: actions/checkout@v1
+      - run: composer install --ansi --no-progress --no-interaction --prefer-dist
+      - uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r Douban Book Metadata.zip src
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Douban Book Metadata.zip
