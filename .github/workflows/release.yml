@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          pwd
-          zip -r douban_book_metadata.zip ./src/*.*
+          echo ${pwd}
+          cd src | zip -r douban_book_metadata.zip ../a.zip *
