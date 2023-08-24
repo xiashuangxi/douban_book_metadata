@@ -66,8 +66,12 @@ class PubDate():
 
 
 class BookMetaData():
-    def __init__(self, id, name, authors, isbn, pages=0, sub_name=None, other_name=None,
-                 publisher=None, pubdate=None, translators=None, series=None, rating=None, url=None, img=None, log=None):
+    def __init__(self, id, name, authors, isbn,
+                 pages=0, sub_name=None, other_name=None,
+                 publisher=None,
+                 pubdate=None,
+                 translators=None, series=None, rating=None,
+                 url=None, img=None, log=None):
         self._id = id
         self._name = name
         self._authors = authors if authors is not None and len(
@@ -100,7 +104,7 @@ class BookMetaData():
         if self._name is None or len(self._name) == 0:
             raise Exception('书籍的name参数不能是None或空字符串')
 
-    def __check_authors(self, authorw):
+    def __check_authors(self, authors):
         if self._authors is None or len(self._authors) == 0:
             raise Exception('书籍的authors参数不能是None或空字符串')
 
@@ -135,13 +139,14 @@ class BookMetaData():
 
     @authors.setter
     def authors(self, authors):
-        self.__check_authors(authorw)
+        self.__check_authors(authors)
         self._authors = authors
 
     @property
     def isbn(self):
         # return self._isbn.replace('-', '')
-        return re.sub('\D', '', self._isbn)
+        # Anaconda
+        return re.sub('\\D', '', self._isbn)
 
     @isbn.setter
     def isbn(self, isbn):
@@ -214,7 +219,8 @@ class BookMetaData():
     def rating(self):
         if self._rating is None:
             return 0
-        return re.search('([\d]\.[\d])|(\d)', self._rating).group()
+        # Anaconda
+        return re.search('([\\d]\\.[\\d])|(\\d)', self._rating).group()
 
     @rating.setter
     def rating(self, rating):
@@ -279,7 +285,8 @@ class BookNode():
         self.year = year
         self.pic = pic
 
-    def __check_data():
+    def __check_data(self):
+        # Anaconda
         if self.id is None or len(self.id) == 0:
             raise Exception('参数id不存在None或空字符串')
         if self.url is None or len(self.url) == 0:

@@ -6,6 +6,7 @@ __copyright__ = '2023,Xia Shuangxi'
 import json
 import gzip
 
+
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -23,6 +24,7 @@ class Helper:
         }
 
     def request(self, url, log=None):
+        print('访问：' + url)
         response = urlopen(
             Request(url, headers=self.__get_headers(), method='GET'))
 
@@ -70,3 +72,25 @@ def get_book_meta(id: str, log=None):
         None,
         log=log
     )
+
+
+def get_latest_version():
+
+    url = 'https://api.github.com/repos/xiashuangxi/douban_book_metadata/releases/latest'
+
+    version_info = json.loads(Helper().request(url))
+    message = version_info.get('message', None)
+
+    if message is not None and message == 'Not Found':
+        print('Not Found')
+        return None
+    else:
+        print(version_info)
+        info = {
+            'version': version_info.get('name'),
+            'size': version_info.get('assets')[0].get('size'),
+            'updated_date': version_info.get('assets')[0].get('updated_at'),
+            'url': version_info.get('assets')[0].get('browser_download_url')
+        }
+
+        return info

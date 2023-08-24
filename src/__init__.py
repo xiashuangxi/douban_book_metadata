@@ -9,9 +9,11 @@ from queue import Queue, Empty
 
 from calibre.ebooks.metadata import check_isbn
 from calibre.ebooks.metadata.book.base import Metadata
-from calibre.ebooks.metadata.sources.base import Source, Option
+from calibre.ebooks.metadata.sources.base import Source
+# , Option
 
 import calibre_plugins.douban_book_metadata.api as api
+from calibre_plugins.douban_book_metadata.config import prefs
 
 __PROGRAM_ID__ = 'douban_book_metadata'
 
@@ -22,7 +24,7 @@ class DoubanBookMetadata(Source):
     description = '获取豆瓣图书元数据'
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'Xia Shuangxi'
-    version = (1, 0, 1)
+    version = (1, 0, 0)
     minimum_calibre_version = (0, 7, 53)
     capabilities = frozenset(['identify', 'cover'])
     touched_fields = frozenset([
@@ -41,13 +43,13 @@ class DoubanBookMetadata(Source):
         'identifier:pages'
     ])
 
-    options = (
-        Option(
-            'douban_bookname_extend_format', 'string', '{出版年份} - {书名}',
-            '在书名中显示出版年份：',
-            '在书名中显示出版的年份，可以有效的避免同书名、同作者不同版次的书显示不全。显示格式默认是：{出版年份} - {书名}'
-        ),
-    )
+    # options = (
+    #     Option(
+    #         'douban_bookname_extend_format', 'string', '{出版年份} - {书名}',
+    #         '在书名中显示出版年份：',
+    #         '在书名中显示出版的年份，可以有效的避免同书名、同作者不同版次的书显示不全。显示格式默认是：{出版年份} - {书名}'
+    #     ),
+    # )
 
     def __init__(self, *args, **kwargs):
         Source.__init__(self, *args, **kwargs)
@@ -159,13 +161,13 @@ class DoubanBookMetadata(Source):
             if book.sub_name is not None and len(book.sub_name) > 0:
                 name = name + ': ' + book.sub_name
 
-            name_exend = self.prefs.get(
+            name_exend = prefs.get(
                 'douban_bookname_extend_format')
 
             if name_exend is not None and len(name_exend.strip()) > 0:
                 _name = re.sub(
-                    '\{出版年份\}', book.pubdate.strftime('%Y'), name_exend)
-                _name = re.sub('\{书名\}', name, _name)
+                    '{出版年份}', book.pubdate.strftime('%Y'), name_exend)
+                _name = re.sub('{书名}', name, _name)
                 name = _name
 
             meta = Metadata(name, book.preview_authors(log))
@@ -186,3 +188,11 @@ class DoubanBookMetadata(Source):
             meta.isbn = book.isbn
             meta.series = book.series
             return meta
+
+    def config_widget(self):
+        # try:
+        # from calibre.gui2.metadata.config import ConfigWidget
+        from calibre_plugins.douban_book_metadata.config import ConfigWidget
+        # return ConfigWidget(self)
+        return ConfigWidget()
+        # except: pass
