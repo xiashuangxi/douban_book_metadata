@@ -57,12 +57,13 @@ class PubDate():
         if isinstance(self.st, datetime):
             return self.st
         else:
-            if re.compile('^\\d{4}$').match(self.st):
-                return datetime.strptime(self.st, '%Y')
-            elif re.compile('^\\d{4}-\\d+$').match(self.st):
-                return datetime.strptime(self.st, '%Y-%m')
-            elif re.compile('^\\d{4}-\\d+-\\d+$').match(self.st):
-                return datetime.strptime(self.st, '%Y-%m-%d')
+            date_string = re.sub(r'\.|年|月|日|-', '-', self.st).split('-')
+            if len(date_string[-1]) == 0:
+                date_string = date_string[:-1]
+
+            d = datetime(year=int(date_string[0]), month=int(date_string[1]), day=1)
+
+            return datetime.strptime(datetime.strftime(d, '%Y-%m'), '%Y-%m')
 
 
 class BookMetaData():
@@ -245,14 +246,14 @@ class BookMetaData():
     def img(self, img):
         self._img = img
 
-    def preview_authors(self, log=None):
-        a = self.authors  # list
-        a[-1] = a[-1] + '著'
+    # def preview_authors(self, log=None):
+    #     a = self.authors  # list
+    #     a[-1] = a[-1] + '著'
 
-        if self.translators is not None and len(self.translators) > 0:
-            t = self.translators + '译'
-            a.append(t)
-        return a
+    #     if self.translators is not None and len(self.translators) > 0:
+    #         t = self.translators + '译'
+    #         a.append(t)
+    #     return a
 
     def __str__(self):
         ans = ['BookMetadata:']

@@ -7,11 +7,12 @@ from datetime import datetime
 
 # from qt.core import QWidget, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QPushButton, QErrorMessage
 
-from qt.core import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QLineEdit, QLayout, QFrame, Qt, QProgressBar, QSpacerItem, QPushButton, QDialogButtonBox, QMetaObject, QCoreApplication
+from qt.core import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QLineEdit, QLayout, QFrame, Qt, QProgressBar, QSpacerItem, QPushButton, QDialogButtonBox, QMetaObject, QCoreApplication, QErrorMessage
 
 from calibre.utils.config import JSONConfig
 from calibre.constants import config_dir
 from calibre_plugins.douban_book_metadata.api import get_latest_version
+from calibre_plugins.douban_book_metadata.logging import Log
 from calibre_plugins.douban_book_metadata.common import is_latest, conversion_size, VersionUpdateThread
 
 
@@ -84,7 +85,7 @@ class ConfigWidget(QWidget):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.progressBar.sizePolicy().hasHeightForWidth())
         self.progressBar.setSizePolicy(sizePolicy2)
-        self.progressBar.setValue(79)
+        self.progressBar.setValue(0)
         self.progressBar.setAlignment(Qt.AlignCenter)
         self.progressBar.setOrientation(Qt.Horizontal)
         # self.progressBar.setTextDirection(QProgressBar.TopToBottom)
@@ -113,10 +114,12 @@ class ConfigWidget(QWidget):
 
         self.update_Button = QPushButton('现在更新')
         # self.update_Button.setObjectName(u"pushButton")
+        self.update_Button.clicked.connect(self._download_plugin)
         self.options_layout.addWidget(self.update_Button)
 
         self.install_but = QPushButton('现在安装')
         # self.install_but.setObjectName(u"pushButton_2")
+        self.install_but.clicked.connect(self._install_plugin)
         self.options_layout.addWidget(self.install_but)
 
         self.main_layout.addLayout(self.options_layout)
@@ -140,7 +143,9 @@ class ConfigWidget(QWidget):
             latest = is_latest(version)
             self.url = result.get('url')
 
-            if latest == 1:
+            if latest == 0:
+                self.info.setText('当前版本为最新版本。')
+            elif latest == 1:
                 size = conversion_size(result.get('size'))
                 date_string = datetime.strptime(result.get('updated_date'), '%Y-%m-%dT%H:%M:%SZ')
                 date_string = date_string.strftime('%Y年%m月%d日 %H时%M分')
@@ -154,9 +159,46 @@ class ConfigWidget(QWidget):
         try:
             t.join()
         except Exception as e:
-            print('检查版本失败: ' + str(e))
-            self.info.setText('检查版本失败: ' + str(e))
+            if 'HTTP Error 404: Not Found' == str(e):
+                self.info.setText('当前版本为最新版本。')
+                Log.exception('检查版本失败: ', e)
+            else:
+                Log.exception('检查版本失败: ', e)
+                self.info.setText('检查版本失败: ' + str(e))
+
+    def _download_plugin_file(self):
+        url = self.url
+        if url is None or len(url) == 0:
+            error = QErrorMessage(self)
+            error.showMessage("下载失败，原因：下载地址为None或是空字符串")
+            return
+
+        # file = requests.get(url)
+        file_name = url.split('/')[-1]
+        plugin_file = os.path.join(config_dir, 'plugins', file_name)
+        response = urlopen(Request(url, method='GET'))
+        with open(plugin_file, 'wb') as f:
+            f.write(response.read())
+            error = QErrorMessage(self)
+            error.showMessage("下载安装成功")
+
+    def _download_plugin(self):
+        print('下载插件')
+        t = VersionUpdateThread(target=self._download_plugin_file)
+
+        try:
+            t.start()
+            # t.join()
+            self.progressBar.setValue(100)
+        except Exception as e:
+            Log.exception('下载最新版本失败: ', e)
+            self.info.setText('下载最新版本失败: ' + str(e))
+
+        # pass
+
+    def _install_plugin(self):
+        print('安装插件')
 
     def save_settings(self):
-        prefs['douban_bookname_extend_format'] = self.extend_format_edit.text()
+        prefs['douban_bookname_extend_format'] = self.extend_edit.text()
         prefs

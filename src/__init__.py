@@ -170,7 +170,7 @@ class DoubanBookMetadata(Source):
                 _name = re.sub('{书名}', name, _name)
                 name = _name
 
-            meta = Metadata(name, book.preview_authors(log))
+            meta = Metadata(name, book.authors)
             meta.identifiers = {
                 __PROGRAM_ID__: book.id,
                 'other_name': book.other_name,
@@ -190,9 +190,5 @@ class DoubanBookMetadata(Source):
             return meta
 
     def config_widget(self):
-        # try:
-        # from calibre.gui2.metadata.config import ConfigWidget
         from calibre_plugins.douban_book_metadata.config import ConfigWidget
-        # return ConfigWidget(self)
         return ConfigWidget()
-        # except: pass

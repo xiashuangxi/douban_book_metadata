@@ -86,11 +86,14 @@ def get_latest_version():
         return None
     else:
         print(version_info)
-        info = {
-            'version': version_info.get('name'),
-            'size': version_info.get('assets')[0].get('size'),
-            'updated_date': version_info.get('assets')[0].get('updated_at'),
-            'url': version_info.get('assets')[0].get('browser_download_url')
-        }
-
-        return info
+        v_t = version_info.get('name')
+        if v_t is not None and len(v_t.strip()) > 0 and v_t.strip()[0].lower() == 'v' and len(version_info.get('assets')) > 0:
+            info = {
+                'version': version_info.get('name'),
+                'size': version_info.get('assets')[0].get('size'),
+                'updated_date': version_info.get('assets')[0].get('updated_at'),
+                'url': version_info.get('assets')[0].get('browser_download_url')
+            }
+            return info
+        else:
+            return None
